@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Happy birthday!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <main>
+    <!-- Scene 1: the invitation -->
+    <section class="scene" id="intro">
+      <p class="lead">Psst, <span class="name"></span>…</p>
+      <h1 class="display intro-title">Someone baked you a cake.</h1>
+      <button class="btn" id="lightBtn">Light the candles</button>
+    </section>
+
+    <!-- Scene 2: the cake -->
+    <section class="scene hidden" id="cakeScene">
+      <p class="hint" id="hint">Make a wish, then blow into your microphone. Or tap each candle.</p>
+      <div class="cake" id="cake">
+        <div class="candles" id="candles"></div>
+        <div class="tier top"><div class="icing"></div></div>
+        <div class="tier bottom"><div class="icing"></div></div>
+        <div class="plate"></div>
+      </div>
+      <button class="btn ghost" id="micBtn">Use my microphone</button>
+    </section>
+
+    <!-- Scene 3: the wish -->
+    <section class="scene hidden" id="wish">
+      <h1 class="display big" id="bigTitle"></h1>
+      <div class="card">
+        <p id="message"></p>
+        <p class="sign" id="sign"></p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="songBtn">Play the song</button>
+        <button class="btn ghost" id="againBtn">Light them again</button>
+      </div>
+      <p class="tip">Tap anywhere for more confetti.</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
