@@ -1,12 +1,8 @@
 // ================= EDIT THESE =================
 const CONFIG = {
   name: "Babou",
-  from: "Yash",
-  candles: 5,
-  message:
-    "Another trip around the sun, and you made it look easy.\n" +
-    "Thank you for the laughs, the help when deadlines got loud, and for making Mondays lighter. " +
-    "Here's to a year of big wins, small joys, and plenty more cake.",
+  // Which reveal she gets first: "scratch", "balloons" or "box"
+  scene: "scratch",
   realGift: "Your real gift is waiting at your desk. Go and look!",
   popWords: ["Babou!", "Babouuu!", "B-A-B-O-U", "It's Babou day", "Bab-WOO!", "Happy bday Babou", "Babou szn"]
 };
@@ -15,7 +11,6 @@ const CONFIG = {
 const $ = (s) => document.querySelector(s);
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const page = document.body.dataset.page;
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let audioCtx = null;
 function getAudio() {
@@ -31,14 +26,14 @@ const COLORS = ["#E63962", "#FFB627", "#BFE8D4", "#3D1A4A", "#FFFFFF", "#FFF1B5"
 let pieces = [];
 let confettiRaf = null;
 
-function resize() {
+function resizeConfetti() {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = innerWidth * dpr;
   canvas.height = innerHeight * dpr;
   cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-addEventListener("resize", resize);
-resize();
+addEventListener("resize", resizeConfetti);
+resizeConfetti();
 
 function burst(x, y, count) {
   if (reduceMotion) return;
@@ -82,7 +77,13 @@ function tick() {
   if (!pieces.length) cctx.clearRect(0, 0, innerWidth, innerHeight);
 }
 
-/* ---------------- sounds ---------------- */
+function bigCelebration() {
+  burst(innerWidth / 2, innerHeight * 0.6, 200);
+  setTimeout(() => burst(innerWidth * 0.15, innerHeight, 90), 400);
+  setTimeout(() => burst(innerWidth * 0.85, innerHeight, 90), 650);
+}
+
+/* ---------------- pop sound ---------------- */
 function popSound() {
   try {
     const ctx = getAudio();
@@ -101,23 +102,21 @@ function popSound() {
 }
 
 /* ======================================================
-   HOME PAGE: the cake
+   HOME PAGE
    ====================================================== */
 if (page === "home") {
-  let micStream = null;
-  let micRaf = null;
-  let typeTimer = null;
-  let candlesLeft = 0;
+  const nick = CONFIG.name;
+  const sceneId = { balloons: "#balloonScene", scratch: "#scratchScene", box: "#boxScene" }[CONFIG.scene] || "#scratchScene";
 
-  document.title = `Happy birthday, ${CONFIG.name}!`;
-  document.querySelectorAll(".name").forEach((el) => (el.textContent = CONFIG.name));
+  document.title = `Happy birthday, ${nick}!`;
+  document.querySelectorAll(".name").forEach((el) => (el.textContent = nick));
 
   const show = (id) => {
     document.querySelectorAll(".scene").forEach((s) => s.classList.add("hidden"));
     $(id).classList.remove("hidden");
   };
 
-  /* ----- Babou pops: click anywhere ----- */
+  /* ----- name pops: click anywhere ----- */
   const POP_BG = ["#FFFFFF", "#FFF1B5", "#BFE8D4", "#FFB627"];
   function popAt(x, y) {
     const el = document.createElement("span");
@@ -126,7 +125,6 @@ if (page === "home") {
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
     el.style.background = POP_BG[Math.floor(Math.random() * POP_BG.length)];
-    el.style.color = "#E63962";
     el.style.setProperty("--r", `${Math.round(Math.random() * 24 - 12)}deg`);
     $("#pops").appendChild(el);
     el.addEventListener("animationend", () => el.remove());
@@ -135,116 +133,174 @@ if (page === "home") {
     burst(x, y, 20);
   }
   document.addEventListener("click", (e) => {
-    if (e.target.closest("a, button")) return;
+    if (e.target.closest("a, button, #ticket")) return;
     popAt(e.clientX, e.clientY);
   });
 
-  /* ----- candles ----- */
-  function buildCandles() {
-    const wrap = $("#candles");
+  /* ----- 2a. balloons ----- */
+  const BALLOON_COLORS = ["#E63962", "#FFB627", "#BFE8D4", "#FFF1B5", "#FFFFFF"];
+  const NUMBERS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
+  function setupBalloons() {
+    const letters = [...nick.toUpperCase()];
+    const wrap = $("#balloons");
     wrap.innerHTML = "";
-    candlesLeft = CONFIG.candles;
-    for (let i = 0; i < CONFIG.candles; i++) {
-      const c = document.createElement("button");
-      c.className = "candle";
-      c.setAttribute("aria-label", `Blow out candle ${i + 1}`);
-      c.style.height = `${46 + (i % 2) * 12}px`;
-      c.innerHTML = '<span class="flame"></span><span class="smoke"></span>';
-      c.addEventListener("click", () => blowOut(c));
-      wrap.appendChild(c);
+    $("#balloonHint").textContent = `${NUMBERS[letters.length] || letters.length} balloons. One secret word. Pop them all.`;
+    let left = letters.length;
+
+    letters.forEach((letter, i) => {
+      const slot = document.createElement("div");
+      slot.className = "balloon-slot";
+      const b = document.createElement("button");
+      b.className = "balloon";
+      b.setAttribute("aria-label", `Pop balloon ${i + 1}`);
+      b.style.setProperty("--c", BALLOON_COLORS[i % BALLOON_COLORS.length]);
+      b.style.setProperty("--d", `${-i * 0.6}s`);
+      b.style.setProperty("--t", `${i % 2 ? 4 : -4}deg`);
+      slot.append(b);
+      slot.insertAdjacentHTML("beforeend", '<span class="knot" aria-hidden="true"></span><span class="string" aria-hidden="true"></span>');
+
+      b.addEventListener("click", () => {
+        const r = b.getBoundingClientRect();
+        popSound();
+        burst(r.left + r.width / 2, r.top + r.height / 2, 40);
+        slot.innerHTML = "";
+        slot.classList.add("popped");
+        const card = document.createElement("span");
+        card.className = "letter";
+        card.textContent = letter;
+        slot.append(card);
+        if (--left === 0) setTimeout(celebrate, 1100);
+      });
+      wrap.append(slot);
+    });
+  }
+
+  /* ----- 2b. scratch card ----- */
+  const ticket = $("#ticket");
+  const scratch = $("#scratch");
+  const sctx = scratch.getContext("2d");
+  let scratchDone = false;
+  let drawing = false;
+  let last = null;
+  let moves = 0;
+
+  function paintScratch() {
+    const w = ticket.clientWidth;
+    const h = ticket.clientHeight;
+    const dpr = window.devicePixelRatio || 1;
+    scratch.width = w * dpr;
+    scratch.height = h * dpr;
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    sctx.globalCompositeOperation = "source-over";
+    sctx.fillStyle = "#C9C4CF";
+    sctx.fillRect(0, 0, w, h);
+    sctx.strokeStyle = "#B7B1BE";
+    sctx.lineWidth = 6;
+    for (let x = -h; x < w; x += 12) {
+      sctx.beginPath();
+      sctx.moveTo(x, 0);
+      sctx.lineTo(x + h, h);
+      sctx.stroke();
     }
+    sctx.fillStyle = "#3D1A4A";
+    sctx.font = "600 22px 'DM Sans', sans-serif";
+    sctx.textAlign = "center";
+    sctx.fillText("Scratch here", w / 2, h / 2 + 8);
   }
 
-  function blowOut(c) {
-    if (c.classList.contains("out")) return;
-    c.classList.add("out");
-    c.disabled = true;
-    candlesLeft--;
-    if (!micStream) puff();
-    if (candlesLeft === 0) {
-      $("#hint").textContent = "Wish made.";
-      setTimeout(celebrate, 1000);
+  function scratchTo(x, y) {
+    sctx.globalCompositeOperation = "destination-out";
+    sctx.lineWidth = 46;
+    sctx.lineCap = "round";
+    sctx.lineJoin = "round";
+    sctx.beginPath();
+    sctx.moveTo(last ? last.x : x, last ? last.y : y);
+    sctx.lineTo(x + 0.01, y + 0.01);
+    sctx.stroke();
+    last = { x, y };
+  }
+
+  function clearedShare() {
+    const { data } = sctx.getImageData(0, 0, scratch.width, scratch.height);
+    let clear = 0;
+    let total = 0;
+    for (let i = 3; i < data.length; i += 4 * 16) {
+      total++;
+      if (data[i] < 128) clear++;
     }
+    return clear / total;
   }
 
-  function puff() {
-    try {
-      const ctx = getAudio();
-      const len = Math.floor(ctx.sampleRate * 0.18);
-      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
-      const src = ctx.createBufferSource();
-      const filter = ctx.createBiquadFilter();
-      const gain = ctx.createGain();
-      src.buffer = buf;
-      filter.type = "lowpass";
-      filter.frequency.value = 1200;
-      gain.gain.value = 0.15;
-      src.connect(filter).connect(gain).connect(ctx.destination);
-      src.start();
-    } catch (e) { /* sound is optional */ }
+  function revealTicket() {
+    if (scratchDone) return;
+    scratchDone = true;
+    scratch.classList.add("gone");
+    const r = ticket.getBoundingClientRect();
+    popSound();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 120);
+    setTimeout(celebrate, 2200);
   }
 
-  /* ----- microphone ----- */
-  async function startMic() {
-    try {
-      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (e) {
-      $("#hint").textContent = "The microphone is blocked, so tap each candle to blow it out.";
-      $("#micBtn").hidden = true;
-      return;
-    }
-    const ctx = getAudio();
-    const analyser = ctx.createAnalyser();
-    analyser.fftSize = 512;
-    ctx.createMediaStreamSource(micStream).connect(analyser);
-    const data = new Uint8Array(analyser.fftSize);
+  scratch.addEventListener("pointerdown", (e) => {
+    if (scratchDone) return;
+    drawing = true;
+    last = null;
+    scratch.setPointerCapture(e.pointerId);
+    scratchTo(e.offsetX, e.offsetY);
+  });
+  scratch.addEventListener("pointermove", (e) => {
+    if (!drawing || scratchDone) return;
+    scratchTo(e.offsetX, e.offsetY);
+    if (++moves % 20 === 0 && clearedShare() > 0.5) revealTicket();
+  });
+  const stopScratch = () => {
+    if (!drawing) return;
+    drawing = false;
+    last = null;
+    if (!scratchDone && clearedShare() > 0.5) revealTicket();
+  };
+  scratch.addEventListener("pointerup", stopScratch);
+  scratch.addEventListener("pointercancel", stopScratch);
+  $("#revealBtn").addEventListener("click", revealTicket);
+  addEventListener("resize", () => {
+    if (!scratchDone && !$("#scratchScene").classList.contains("hidden")) paintScratch();
+  });
 
-    $("#micBtn").hidden = true;
-    $("#hint").textContent = "Listening. Blow at your screen!";
-
-    let blowFrames = 0;
-    const loop = () => {
-      analyser.getByteTimeDomainData(data);
-      let sum = 0;
-      for (const v of data) {
-        const x = (v - 128) / 128;
-        sum += x * x;
-      }
-      const rms = Math.sqrt(sum / data.length);
-      $("#cake").style.setProperty("--lean", `${Math.min(rms * 300, 45)}deg`);
-
-      if (rms > 0.12) {
-        blowFrames++;
-        if (blowFrames > 8) {
-          blowFrames = 0;
-          const lit = [...document.querySelectorAll(".candle:not(.out)")];
-          if (lit.length) blowOut(lit[Math.floor(Math.random() * lit.length)]);
-        }
-      } else {
-        blowFrames = Math.max(0, blowFrames - 1);
-      }
-      if (candlesLeft > 0) micRaf = requestAnimationFrame(loop);
-      else stopMic();
-    };
-    loop();
+  function setupScratch() {
+    scratchDone = false;
+    scratch.classList.remove("gone");
+    paintScratch();
   }
 
-  function stopMic() {
-    cancelAnimationFrame(micRaf);
-    if (micStream) micStream.getTracks().forEach((t) => t.stop());
-    micStream = null;
-    $("#cake").style.setProperty("--lean", "0deg");
+  /* ----- 2c. gift box ----- */
+  const box = $("#box");
+  const ribbonBtn = $("#ribbonBtn");
+  function setupBox() {
+    box.classList.remove("open");
+    ribbonBtn.disabled = false;
+  }
+  ribbonBtn.addEventListener("click", () => {
+    ribbonBtn.disabled = true;
+    box.classList.add("open");
+    popSound();
+    const r = box.getBoundingClientRect();
+    setTimeout(() => burst(r.left + r.width / 2, r.top + 60, 160), 250);
+    setTimeout(celebrate, 1500);
+  });
+
+  /* ----- start the chosen scene ----- */
+  function startScene() {
+    show(sceneId);
+    if (sceneId === "#balloonScene") setupBalloons();
+    if (sceneId === "#scratchScene") setupScratch();
+    if (sceneId === "#boxScene") setupBox();
   }
 
-  /* ----- celebration ----- */
+  /* ----- 3. the party ----- */
   function celebrate() {
-    stopMic();
-    show("#wish");
-
+    show("#party");
     const title = $("#bigTitle");
-    const text = `Happy birthday, ${CONFIG.name}!`;
+    const text = `Happy birthday, ${nick}!`;
     title.innerHTML = "";
     title.setAttribute("aria-label", text);
     let n = 0;
@@ -262,29 +318,7 @@ if (page === "home") {
       title.appendChild(w);
       if (wi < words.length - 1) title.appendChild(document.createTextNode(" "));
     });
-
-    clearInterval(typeTimer);
-    const msg = $("#message");
-    const sign = $("#sign");
-    msg.textContent = "";
-    sign.textContent = "";
-    if (reduceMotion) {
-      msg.textContent = CONFIG.message;
-      sign.textContent = `— ${CONFIG.from}`;
-    } else {
-      let i = 0;
-      typeTimer = setInterval(() => {
-        msg.textContent = CONFIG.message.slice(0, ++i);
-        if (i >= CONFIG.message.length) {
-          clearInterval(typeTimer);
-          sign.textContent = `— ${CONFIG.from}`;
-        }
-      }, 28);
-    }
-
-    burst(innerWidth / 2, innerHeight * 0.6, 200);
-    setTimeout(() => burst(innerWidth * 0.15, innerHeight, 90), 400);
-    setTimeout(() => burst(innerWidth * 0.85, innerHeight, 90), 650);
+    bigCelebration();
   }
 
   /* ----- the song (public domain melody) ----- */
@@ -317,17 +351,10 @@ if (page === "home") {
   }
 
   /* ----- wiring ----- */
-  $("#lightBtn").addEventListener("click", () => {
+  $("#startBtn").addEventListener("click", () => {
     getAudio();
-    buildCandles();
-    show("#cakeScene");
+    startScene();
   });
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    $("#micBtn").hidden = true;
-    $("#hint").textContent = "Make a wish, then tap each candle to blow it out.";
-  }
-  $("#micBtn").addEventListener("click", startMic);
 
   $("#songBtn").addEventListener("click", () => {
     const btn = $("#songBtn");
@@ -342,77 +369,60 @@ if (page === "home") {
     }, ms);
   });
 
-  $("#againBtn").addEventListener("click", () => {
-    clearInterval(typeTimer);
-    buildCandles();
-    $("#hint").textContent = "Make a wish, then blow into your microphone. Or tap each candle.";
-    $("#micBtn").hidden = !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-    show("#cakeScene");
-  });
+  $("#againBtn").addEventListener("click", startScene);
+
+  // coming back from the gift page jumps straight to the party
+  if (location.hash === "#party") celebrate();
 }
 
 /* ======================================================
-   GIFT PAGE: the prank
+   GIFT PAGE: the checkout prank
+   Nothing typed on this page is stored or sent anywhere.
    ====================================================== */
 if (page === "gift") {
-  const overlay = $("#overlay");
-  const stepsEl = $("#steps");
-  const reveal = $("#reveal");
-  const modalTitle = $("#modalTitle");
-  const nick = CONFIG.name;
+  const fmt = (n) => `$${n.toFixed(2)}`;
+  const plansView = $("#plansView");
+  const cardView = $("#cardView");
 
-  const steps = [
-    `Connecting to the ${nick} servers`,
-    `Verifying ${nick}-ness: 100%`,
-    "Applying birthday discount: −100%",
-    "Charging your card… wait, what card?"
-  ];
-
-  let running = false;
-  async function subscribe() {
-    if (running) return;
-    running = true;
-    overlay.hidden = false;
-    modalTitle.textContent = "Processing your subscription";
-    modalTitle.focus();
-    stepsEl.innerHTML = "";
-    reveal.hidden = true;
-
-    for (const text of steps) {
-      const li = document.createElement("li");
-      li.innerHTML = '<span class="spinner" aria-hidden="true"></span><span></span>';
-      li.lastChild.textContent = text;
-      stepsEl.appendChild(li);
-      await sleep(reduceMotion ? 300 : 1100);
-      li.firstChild.outerHTML = '<span class="check" aria-hidden="true">✓</span>';
-    }
-
-    await sleep(400);
-    stepsEl.innerHTML = "";
-    modalTitle.textContent = "Well, well, well…";
-    $("#realGift").textContent = CONFIG.realGift;
-    reveal.hidden = false;
-    popSound();
-    burst(innerWidth / 2, innerHeight / 2, 220);
-    setTimeout(() => burst(innerWidth * 0.2, innerHeight, 100), 300);
-    setTimeout(() => burst(innerWidth * 0.8, innerHeight, 100), 500);
-    running = false;
-  }
-  document.querySelectorAll(".subscribe").forEach((b) => b.addEventListener("click", subscribe));
-
-  // "No thanks" link that dodges the mouse
-  const nope = $("#nopeBtn");
-  const nopeLines = ["Too late", "That's not an option", `${nick}, please`, "Just pick a plan", "Nope"];
-  let ni = 0;
-  const dodge = () => {
-    if (reduceMotion) return;
-    const x = (Math.random() * 2 - 1) * Math.min(220, innerWidth / 2 - 100);
-    const y = (Math.random() * 2 - 1) * 60;
-    nope.style.translate = `${x}px ${y}px`;
-  };
-  nope.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") dodge(); });
-  nope.addEventListener("click", () => {
-    nope.textContent = nopeLines[ni++ % nopeLines.length];
-    dodge();
+  document.querySelectorAll(".co-btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      const plan = b.dataset.plan;
+      const price = fmt(Number(b.dataset.price));
+      $("#sumTitle").textContent = `Subscribe to Babou+ ${plan}`;
+      $("#sumPrice").textContent = price;
+      $("#sumLine").textContent = `Babou+ ${plan} (monthly)`;
+      $("#sumLinePrice").textContent = price;
+      $("#sumDue").textContent = price;
+      $("#payBtn").textContent = `Subscribe for ${price}`;
+      plansView.hidden = true;
+      cardView.hidden = false;
+      scrollTo(0, 0);
+    });
   });
+
+  $("#backBtn").addEventListener("click", () => {
+    cardView.hidden = true;
+    plansView.hidden = false;
+  });
+
+  // The moment she touches a card field (or presses Subscribe), the joke lands.
+  let caught = false;
+  function gotcha(e) {
+    if (e && e.target && typeof e.target.blur === "function") e.target.blur();
+    if (caught) return;
+    caught = true;
+    document.querySelectorAll(".trap").forEach((i) => (i.value = ""));
+    $("#gotTitle").textContent = `Gotcha, ${CONFIG.name}!`;
+    $("#realGift").textContent = CONFIG.realGift;
+    $("#overlay").hidden = false;
+    $("#gotTitle").focus();
+    popSound();
+    bigCelebration();
+  }
+  document.querySelectorAll(".trap").forEach((input) => {
+    input.addEventListener("pointerdown", gotcha);
+    input.addEventListener("focus", gotcha);
+    input.addEventListener("input", (e) => { e.target.value = ""; gotcha(e); });
+  });
+  $("#payBtn").addEventListener("click", gotcha);
 }
