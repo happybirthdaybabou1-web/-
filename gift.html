@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Babou+ | Unlock your gift</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="gift">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <main class="paywall">
+    <p class="brand">Babou<span>+</span></p>
+    <h1 class="display paywall-title">Subscribe to claim your gift</h1>
+    <p class="sub">Your gift is wrapped and waiting. Choose a plan to unlock it.</p>
+
+    <div class="plans">
+      <article class="plan">
+        <h2>Bestie Basic</h2>
+        <p class="price">£0<small>/month</small></p>
+        <ul>
+          <li>1 gift (locked)</li>
+          <li>Ads every 3 seconds</li>
+          <li>Birthday song, sung off-key</li>
+        </ul>
+        <button class="btn ghost subscribe">Subscribe</button>
+      </article>
+
+      <article class="plan hot">
+        <span class="badge">Most popular with Babous</span>
+        <h2>Babou Premium</h2>
+        <p class="price">£0<small>/month</small></p>
+        <ul>
+          <li>1 gift (actually unlocked)</li>
+          <li>Unlimited bragging rights</li>
+          <li>First slice of cake</li>
+        </ul>
+        <button class="btn ghost subscribe">Subscribe</button>
+      </article>
+
+      <article class="plan">
+        <h2>Ultra Babou Max</h2>
+        <p class="price">£0<small>/month</small></p>
+        <ul>
+          <li>Everything in Premium</li>
+          <li>The team stops singing</li>
+          <li>A day off (approved by nobody)</li>
+        </ul>
+        <button class="btn ghost subscribe">Subscribe</button>
+      </article>
+    </div>
+
+    <p class="fine">By subscribing you agree to accept one (1) group hug and admit you secretly love birthdays. Cancel anytime.*<br>*You can't.</p>
+    <button class="nope" id="nopeBtn">No thanks, I hate gifts</button>
+  </main>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle" tabindex="-1">Processing your subscription</h2>
+      <ol class="steps" id="steps"></ol>
+      <div class="reveal" id="reveal" hidden>
+        <p class="display gotcha">Gotcha, Babou!</p>
+        <p>There was never a subscription. Happy birthday from all of us.</p>
+        <p class="real-gift" id="realGift"></p>
+        <a class="btn" href="index.html">Back to the cake</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
