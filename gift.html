@@ -3,70 +3,129 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Babou+ | Unlock your gift</title>
+  <title>Babou+ | Checkout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Shrikhand&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="gift">
+<body data-page="gift" class="checkout">
   <canvas id="confetti" aria-hidden="true"></canvas>
 
-  <main class="paywall">
-    <p class="brand">Babou<span>+</span></p>
-    <h1 class="display paywall-title">Subscribe to claim your gift</h1>
-    <p class="sub">Your gift is wrapped and waiting. Choose a plan to unlock it.</p>
-
-    <div class="plans">
-      <article class="plan">
-        <h2>Bestie Basic</h2>
-        <p class="price">£0<small>/month</small></p>
-        <ul>
-          <li>1 gift (locked)</li>
-          <li>Ads every 3 seconds</li>
-          <li>Birthday song, sung off-key</li>
-        </ul>
-        <button class="btn ghost subscribe">Subscribe</button>
-      </article>
-
-      <article class="plan hot">
-        <span class="badge">Most popular with Babous</span>
-        <h2>Babou Premium</h2>
-        <p class="price">£0<small>/month</small></p>
-        <ul>
-          <li>1 gift (actually unlocked)</li>
-          <li>Unlimited bragging rights</li>
-          <li>First slice of cake</li>
-        </ul>
-        <button class="btn ghost subscribe">Subscribe</button>
-      </article>
-
-      <article class="plan">
-        <h2>Ultra Babou Max</h2>
-        <p class="price">£0<small>/month</small></p>
-        <ul>
-          <li>Everything in Premium</li>
-          <li>The team stops singing</li>
-          <li>A day off (approved by nobody)</li>
-        </ul>
-        <button class="btn ghost subscribe">Subscribe</button>
-      </article>
+  <header class="co-bar">
+    <div class="co-inner">
+      <span class="co-brand">Babou<span>+</span></span>
+      <span class="co-secure">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+        Secure checkout
+      </span>
     </div>
+  </header>
 
-    <p class="fine">By subscribing you agree to accept one (1) group hug and admit you secretly love birthdays. Cancel anytime.*<br>*You can't.</p>
-    <button class="nope" id="nopeBtn">No thanks, I hate gifts</button>
+  <main class="co-main">
+    <!-- Step 1: plans -->
+    <section class="co-plans" id="plansView">
+      <h1>Your gift is ready to unlock</h1>
+      <p class="co-sub">Choose a plan to claim it. You can change or cancel your plan at any time.</p>
+
+      <div class="co-grid">
+        <article class="co-plan">
+          <h2>Starter</h2>
+          <p class="co-muted">For casual gift receivers</p>
+          <p class="co-price">$1<span> / month</span></p>
+          <ul>
+            <li>1 gift, unlocked</li>
+            <li>Standard wrapping</li>
+            <li>Email support</li>
+          </ul>
+          <button class="co-btn" data-plan="Starter" data-price="1">Subscribe</button>
+        </article>
+
+        <article class="co-plan hot">
+          <span class="co-tag">Most popular</span>
+          <h2>Plus</h2>
+          <p class="co-muted">For people who love surprises</p>
+          <p class="co-price">$200<span> / month</span></p>
+          <ul>
+            <li>1 gift, unlocked instantly</li>
+            <li>Premium wrapping</li>
+            <li>Priority cake access</li>
+          </ul>
+          <button class="co-btn" data-plan="Plus" data-price="200">Subscribe</button>
+        </article>
+
+        <article class="co-plan">
+          <h2>Premium</h2>
+          <p class="co-muted">For legends only</p>
+          <p class="co-price">$500<span> / month</span></p>
+          <ul>
+            <li>Everything in Plus</li>
+            <li>Personal birthday song</li>
+            <li>Dedicated gift manager</li>
+          </ul>
+          <button class="co-btn" data-plan="Premium" data-price="500">Subscribe</button>
+        </article>
+      </div>
+
+      <p class="co-small">Prices in USD. Billed monthly. Taxes may apply.</p>
+    </section>
+
+    <!-- Step 2: card details (nothing here is ever sent or saved) -->
+    <section class="co-pay" id="cardView" hidden>
+      <div class="co-summary">
+        <button class="co-back" id="backBtn">← Back to plans</button>
+        <p class="co-muted" id="sumTitle">Subscribe to Babou+ Plus</p>
+        <p class="co-total"><span id="sumPrice">$200.00</span><span class="co-per"> per month</span></p>
+        <div class="co-lines">
+          <div><span id="sumLine">Babou+ Plus (monthly)</span><span id="sumLinePrice">$200.00</span></div>
+          <div class="co-muted"><span>Tax</span><span>$0.00</span></div>
+        </div>
+        <div class="co-due"><span>Total due today</span><span id="sumDue">$200.00</span></div>
+      </div>
+
+      <div class="co-form">
+        <h2>Pay with card</h2>
+        <div class="co-field">
+          <label for="coEmail">Email</label>
+          <input id="coEmail" type="email" autocomplete="off" placeholder="you@example.com">
+        </div>
+        <div class="co-field">
+          <label for="coCard">Card information</label>
+          <div class="co-cardbox">
+            <input id="coCard" class="trap" inputmode="numeric" autocomplete="off" placeholder="1234 1234 1234 1234">
+            <div class="co-row">
+              <input class="trap" aria-label="Expiry date" autocomplete="off" placeholder="MM / YY">
+              <input class="trap" aria-label="Security code" autocomplete="off" placeholder="CVC">
+            </div>
+          </div>
+        </div>
+        <div class="co-field">
+          <label for="coName">Name on card</label>
+          <input id="coName" autocomplete="off" placeholder="Full name">
+        </div>
+        <div class="co-field">
+          <label for="coCountry">Country</label>
+          <select id="coCountry">
+            <option>United Kingdom</option>
+            <option>United States</option>
+            <option>India</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <button class="co-pay-btn" id="payBtn">Subscribe for $200.00</button>
+        <p class="co-small">By subscribing, you allow Babou+ to charge your card for this payment and future payments in line with its terms.</p>
+      </div>
+    </section>
   </main>
 
+  <!-- Step 3: the gotcha -->
   <div class="overlay" id="overlay" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle" tabindex="-1">Processing your subscription</h2>
-      <ol class="steps" id="steps"></ol>
-      <div class="reveal" id="reveal" hidden>
-        <p class="display gotcha">Gotcha, Babou!</p>
-        <p>There was never a subscription. Happy birthday from all of us.</p>
-        <p class="real-gift" id="realGift"></p>
-        <a class="btn" href="index.html">Back to the cake</a>
-      </div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gotTitle">
+      <p class="got-kicker">Whoa, whoa, put the card away.</p>
+      <h2 class="display gotcha" id="gotTitle" tabindex="-1">Gotcha!</h2>
+      <p>There's no subscription and no checkout. Nothing you typed went anywhere. Happy birthday from all of us.</p>
+      <p class="real-gift" id="realGift"></p>
+      <a class="btn" href="index.html#party">Back to the party</a>
     </div>
   </div>
 
