@@ -1,6 +1,6 @@
 // ================= EDIT THESE =================
 const CONFIG = {
-  name: "Babou",
+  name: "Sheri",
   // Which reveal she gets first: "scratch", "balloons" or "box"
   scene: "scratch",
   realGift: "Your real gift is waiting at your desk. Go and look!",
@@ -388,9 +388,9 @@ if (page === "gift") {
     b.addEventListener("click", () => {
       const plan = b.dataset.plan;
       const price = fmt(Number(b.dataset.price));
-      $("#sumTitle").textContent = `Subscribe to Babou+ ${plan}`;
+      $("#sumTitle").textContent = `Subscribe to myt money+ ${plan}`;
       $("#sumPrice").textContent = price;
-      $("#sumLine").textContent = `Babou+ ${plan} (monthly)`;
+      $("#sumLine").textContent = `myt money+ ${plan} (monthly)`;
       $("#sumLinePrice").textContent = price;
       $("#sumDue").textContent = price;
       $("#payBtn").textContent = `Subscribe for ${price}`;
