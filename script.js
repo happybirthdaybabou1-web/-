@@ -1,6 +1,6 @@
 // ================= EDIT THESE =================
 const CONFIG = {
-  name: "Sheri",
+  name: "Baboo",
   // Which reveal she gets first: "scratch", "balloons" or "box"
   scene: "scratch",
   realGift: "Your real gift is waiting at your desk. Go and look!",
@@ -412,7 +412,7 @@ if (page === "gift") {
     if (caught) return;
     caught = true;
     document.querySelectorAll(".trap").forEach((i) => (i.value = ""));
-    $("#gotTitle").textContent = `Gotcha, ${CONFIG.name}!`;
+    $("#gotTitle").textContent = `Gotcha, ${CONFIG.}!`;
     $("#realGift").textContent = CONFIG.realGift;
     $("#overlay").hidden = false;
     $("#gotTitle").focus();
