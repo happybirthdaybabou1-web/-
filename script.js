@@ -1,6 +1,6 @@
 // ================= EDIT THESE =================
 const CONFIG = {
-  realName: "Amina",   // used on the reveal page (scratch card / balloons)
+  realName: "Sheri",   // used on the reveal page (scratch card / balloons)
   nickname: "Babou",   // used on the party page and in the pops
   // Which reveal she gets first: "scratch", "balloons" or "box"
   scene: "scratch",
