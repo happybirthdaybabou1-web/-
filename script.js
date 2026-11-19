@@ -1,6 +1,7 @@
 // ================= EDIT THESE =================
 const CONFIG = {
-  name: "Baboo",
+  realName: "Amina",   // used on the reveal page (scratch card / balloons)
+  nickname: "Babou",   // used on the party page and in the pops
   // Which reveal she gets first: "scratch", "balloons" or "box"
   scene: "scratch",
   realGift: "Your real gift is waiting at your desk. Go and look!",
@@ -105,11 +106,11 @@ function popSound() {
    HOME PAGE
    ====================================================== */
 if (page === "home") {
-  const nick = CONFIG.name;
+  const nick = CONFIG.nickname;
+  const realName = CONFIG.realName;
   const sceneId = { balloons: "#balloonScene", scratch: "#scratchScene", box: "#boxScene" }[CONFIG.scene] || "#scratchScene";
 
-  document.title = `Happy birthday, ${nick}!`;
-  document.querySelectorAll(".name").forEach((el) => (el.textContent = nick));
+  document.querySelectorAll(".real-name").forEach((el) => (el.textContent = realName));
 
   const show = (id) => {
     document.querySelectorAll(".scene").forEach((s) => s.classList.add("hidden"));
@@ -141,7 +142,7 @@ if (page === "home") {
   const BALLOON_COLORS = ["#E63962", "#FFB627", "#BFE8D4", "#FFF1B5", "#FFFFFF"];
   const NUMBERS = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
   function setupBalloons() {
-    const letters = [...nick.toUpperCase()];
+    const letters = [...realName.toUpperCase()];
     const wrap = $("#balloons");
     wrap.innerHTML = "";
     $("#balloonHint").textContent = `${NUMBERS[letters.length] || letters.length} balloons. One secret word. Pop them all.`;
@@ -376,53 +377,40 @@ if (page === "home") {
 }
 
 /* ======================================================
-   GIFT PAGE: the checkout prank
-   Nothing typed on this page is stored or sent anywhere.
+   GIFT PAGE: the prank
+   Any click (or tap) anywhere shows the monkey for 3 seconds,
+   then the "Gotcha!" pop-up. Nothing is stored or sent anywhere.
    ====================================================== */
 if (page === "gift") {
-  const fmt = (n) => `$${n.toFixed(2)}`;
-  const plansView = $("#plansView");
-  const cardView = $("#cardView");
-
-  document.querySelectorAll(".co-btn").forEach((b) => {
-    b.addEventListener("click", () => {
-      const plan = b.dataset.plan;
-      const price = fmt(Number(b.dataset.price));
-      $("#sumTitle").textContent = `Subscribe to myt money+ ${plan}`;
-      $("#sumPrice").textContent = price;
-      $("#sumLine").textContent = `myt money+ ${plan} (monthly)`;
-      $("#sumLinePrice").textContent = price;
-      $("#sumDue").textContent = price;
-      $("#payBtn").textContent = `Subscribe for ${price}`;
-      plansView.hidden = true;
-      cardView.hidden = false;
-      scrollTo(0, 0);
-    });
-  });
-
-  $("#backBtn").addEventListener("click", () => {
-    cardView.hidden = true;
-    plansView.hidden = false;
-  });
-
-  // The moment she touches a card field (or presses Subscribe), the joke lands.
+  const monkey = $("#monkey");
+  const overlay = $("#overlay");
   let caught = false;
-  function gotcha(e) {
-    if (e && e.target && typeof e.target.blur === "function") e.target.blur();
+
+  function gotcha() {
     if (caught) return;
     caught = true;
-    document.querySelectorAll(".trap").forEach((i) => (i.value = ""));
-    $("#gotTitle").textContent = `Gotcha, ${CONFIG.}!`;
     $("#realGift").textContent = CONFIG.realGift;
-    $("#overlay").hidden = false;
-    $("#gotTitle").focus();
+
+    // 1. monkey pops up
+    monkey.hidden = false;
     popSound();
-    bigCelebration();
+
+    // 2. after 3 seconds it fades away and the gotcha appears
+    setTimeout(() => monkey.classList.add("fade"), 2400);
+    setTimeout(() => {
+      monkey.hidden = true;
+      overlay.hidden = false;
+      $("#gotTitle").focus();
+      popSound();
+      bigCelebration();
+    }, 3000);
   }
-  document.querySelectorAll(".trap").forEach((input) => {
-    input.addEventListener("pointerdown", gotcha);
-    input.addEventListener("focus", gotcha);
-    input.addEventListener("input", (e) => { e.target.value = ""; gotcha(e); });
-  });
-  $("#payBtn").addEventListener("click", gotcha);
+
+  // Block every click on the page (except inside the gotcha pop-up) and trigger the prank
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#overlay")) return;
+    e.preventDefault();
+    e.stopPropagation();
+    gotcha();
+  }, true);
 }
