@@ -23,7 +23,6 @@
   </header>
 
   <main class="co-main">
-    <!-- Step 1: plans -->
     <section class="co-plans" id="plansView">
       <h1>Subscribe to claim your gift</h1>
       <p class="co-sub">Choose a plan to claim it. You can change or cancel your plan at any time.</p>
@@ -38,7 +37,7 @@
             <li>Standard wrapping</li>
             <li>Email support</li>
           </ul>
-          <button class="co-btn" data-plan="Starter" data-price="1">Subscribe</button>
+          <button class="co-btn">Subscribe</button>
         </article>
 
         <article class="co-plan hot">
@@ -51,7 +50,7 @@
             <li>Premium wrapping</li>
             <li>Priority cake access</li>
           </ul>
-          <button class="co-btn" data-plan="Plus" data-price="200">Subscribe</button>
+          <button class="co-btn">Subscribe</button>
         </article>
 
         <article class="co-plan">
@@ -63,67 +62,24 @@
             <li>Personal birthday song</li>
             <li>Dedicated gift manager</li>
           </ul>
-          <button class="co-btn" data-plan="Premium" data-price="500">Subscribe</button>
+          <button class="co-btn">Subscribe</button>
         </article>
       </div>
 
       <p class="co-small">Prices in USD. Billed monthly. Taxes may apply.</p>
     </section>
-
-    <!-- Step 2: card details (nothing here is ever sent or saved) -->
-    <section class="co-pay" id="cardView" hidden>
-      <div class="co-summary">
-        <button class="co-back" id="backBtn">← Back to plans</button>
-        <p class="co-muted" id="sumTitle">Subscribe to Money+ Plus</p>
-        <p class="co-total"><span id="sumPrice">$200.00</span><span class="co-per"> per month</span></p>
-        <div class="co-lines">
-          <div><span id="sumLine">Money+ Plus (monthly)</span><span id="sumLinePrice">$200.00</span></div>
-          <div class="co-muted"><span>Tax</span><span>$0.00</span></div>
-        </div>
-        <div class="co-due"><span>Total due today</span><span id="sumDue">$200.00</span></div>
-      </div>
-
-      <div class="co-form">
-        <h2>Pay with card</h2>
-        <div class="co-field">
-          <label for="coEmail">Email</label>
-          <input id="coEmail" type="email" autocomplete="off" placeholder="you@example.com">
-        </div>
-        <div class="co-field">
-          <label for="coCard">Card information</label>
-          <div class="co-cardbox">
-            <input id="coCard" class="trap" inputmode="numeric" autocomplete="off" placeholder="1234 1234 1234 1234">
-            <div class="co-row">
-              <input class="trap" aria-label="Expiry date" autocomplete="off" placeholder="MM / YY">
-              <input class="trap" aria-label="Security code" autocomplete="off" placeholder="CVC">
-            </div>
-          </div>
-        </div>
-        <div class="co-field">
-          <label for="coName">Name on card</label>
-          <input id="coName" autocomplete="off" placeholder="Full name">
-        </div>
-        <div class="co-field">
-          <label for="coCountry">Country</label>
-          <select id="coCountry">
-            <option>Vallee pitot</option>
-            <option>United States</option>
-            <option>India</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <button class="co-pay-btn" id="payBtn">Subscribe for $200.00</button>
-        <p class="co-small">By subscribing, you allow Moeny+ to charge your card for this payment and future payments in line with its terms.</p>
-      </div>
-    </section>
   </main>
 
-  <!-- Step 3: the gotcha -->
+  <!-- Monkey pop-up: shows first, fades after 3 seconds -->
+  <div class="monkey" id="monkey" hidden>
+    <img src="monkey.jpg" alt="An orangutan with an orange ball on its nose, looking very unimpressed">
+  </div>
+
+  <!-- The gotcha -->
   <div class="overlay" id="overlay" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gotTitle">
-      <p class="got-kicker"></p>
       <h2 class="display gotcha" id="gotTitle" tabindex="-1">Gotcha!</h2>
-      <p>There's no subscription and no checkout. Nothing you typed went anywhere. Happy birthday from all of us.</p>
+      <p>There's no subscription and no checkout. Happy birthday from all of us.</p>
       <p class="real-gift" id="realGift"></p>
       <a class="btn" href="index.html#party">Back to the party</a>
     </div>
