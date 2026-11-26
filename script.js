@@ -1,10 +1,10 @@
 // ================= EDIT THESE =================
 const CONFIG = {
-  realName: "Sheri",   // used on the reveal page (scratch card / balloons)
+  realName: "Sherihaan",   // used on the reveal page (scratch card / balloons)
   nickname: "Babou",   // used on the party page and in the pops
   // Which reveal she gets first: "scratch", "balloons" or "box"
   scene: "scratch",
-  realGift: "Your real gift is waiting at your desk. Go and look!",
+  realGift: "Have a nice day :)",
   popWords: ["Babou!", "Babouuu!", "B-A-B-O-U", "It's Babou day", "Bab-WOO!", "Happy bday Babou", "Babou szn"]
 };
 // ==============================================
